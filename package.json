@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "production": "webpack --mode production --config webpack.config.prod.js",
     "build": "webpack --mode development --config webpack.config.dev.js",
     "start": "webpack-dev-server --config webpack.config.dev.js"
   },
