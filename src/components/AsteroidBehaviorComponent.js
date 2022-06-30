@@ -18,7 +18,7 @@ class AsteroidBehaviorComponent extends Component {
 
 	onAwake() {
 		this.#transform = this.gameObject.transform;
-        this.#collider = this.gameObject.getComponent(CircleColliderComponent.name);
+        this.#collider = this.gameObject.getComponent(CircleColliderComponent);
 	}
 
     tick(dt) {

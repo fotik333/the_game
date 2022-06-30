@@ -1,16 +1,21 @@
 import { InputManager } from "./ui";
-import { Sprite, Container } from 'pixi.js';
+import { Sprite, Container, Graphics } from 'pixi.js';
 import StarsBackground from "./StarsBackground";
 import Screen from './core/Screen';
 import { layoutConfig } from './config/layout';
 import gameConfig from './config/gameConfig.json';
 import CustomGameSession from './game/CustomGameSession';
+import { HEIGHT, WIDTH } from ".";
 
 class Game extends Container {
 	constructor() {
 		super();
 
-		this.addChild(Sprite.from('background'));
+		let backround = this.addChild(Sprite.from('background'));
+		backround.width = WIDTH;
+		backround.height = HEIGHT;
+
+		this.mask = this.addChild(new Graphics().beginFill(0xff0000, 0.5).drawRect(0, 0, WIDTH, HEIGHT).endFill());
 
         this.starsBackground = this.addChild(new StarsBackground());
 
@@ -72,6 +77,14 @@ class Game extends Container {
 
 	destroy() {
 		this.gameSession.finish();
+	}
+
+	resize() {
+		let width = window.getSize().width;
+		let height = window.getSize().height;
+		
+		this.scale.set(width / height);
+		this.position.y = height / 2 - HEIGHT * this.scale.x / 2;
 	}
 }
 

@@ -9,6 +9,7 @@ class GameObject {
 
     constructor(name, components) {
         if (name) this.name = name;
+
         this.components.push(this.#transform, ...components);
         GameWorld.addGameObject(this);
     }
@@ -17,12 +18,12 @@ class GameObject {
         return this.#transform;
     }
 
-    getComponent(name) {
-        return this.components.find(component => component.constructor.name === name);
+    getComponent(component) {
+        return this.components.find(c => c instanceof component);
     }
 
-    hasComponent(name) {
-        return !!this.components.find(component => component.constructor.name === name);
+    hasComponent(component) {
+        return !!this.components.find(c => c instanceof component);
     }
 
     awake() {

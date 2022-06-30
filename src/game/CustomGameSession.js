@@ -83,7 +83,7 @@ export default class CustomGameSession extends GameSession {
                 new CircleColliderComponent(sprite.height / 2, LAYERS.asteroids),
             ];
 
-            let spaceshipHeight = this.spaceship.getComponent(DisplayObjectComponent.name).displayObject.height;
+            let spaceshipHeight = this.spaceship.getComponent(DisplayObjectComponent).displayObject.height;
 
             if (gameConfig.movingAsteroids) {
                 components.push(new AsteroidBehaviorComponent({

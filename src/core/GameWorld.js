@@ -46,7 +46,7 @@ class GameWorld {
         let collisions = [];
 
         this.gameObjects.forEach(go => {
-            let collider = go.getComponent(CircleColliderComponent.name);
+            let collider = go.getComponent(CircleColliderComponent);
             
             if (collider && collider.layer === layer) {
                 let goPosition = go.transform.position;

@@ -25,7 +25,7 @@ class SetupComponent extends Component {
         this.#asteroids = GameWorld.findByName('Asteroid');
 
         this.#spaceship = GameWorld.findOneByName('Spaceship');
-        this.#spaceshipAttack = this.#spaceship.getComponent(SpaceshipAttackComponent.name);
+        this.#spaceshipAttack = this.#spaceship.getComponent(SpaceshipAttackComponent);
 
         let rocketsText = this.#screen.getChildByName('RocketsAmount');
         this.#spaceshipAttack.on('SHOT', _ => rocketsText.text = this.#spaceshipAttack.rocketsCount);

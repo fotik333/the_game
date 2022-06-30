@@ -1,48 +1,127 @@
-import * as PIXI from "pixi.js";
-global.PIXI = PIXI;
+import * as PIXI from 'pixi.js-legacy';
 
 import Game from './Game.js';
+import { resourcesConfig } from './resouces';
 
-const WIDTH = 1280;
-const HEIGHT = 720;
+const TWEEN = require('@tweenjs/tween.js');
+global.TWEEN = TWEEN;
+global.PIXI = PIXI;
 
-const app = new PIXI.Application({
-	width: WIDTH,
-	height: HEIGHT,
-	autoResize: true
-});
+function animate(time) {
+	requestAnimationFrame(animate);
 
-window.addEventListener('resize', resize);
-
-function resize() {
-	app.renderer.resize(window.innerWidth, window.innerHeight);
-
-	let scaleX = window.innerWidth / WIDTH;
-	let scaleY = window.innerHeight / HEIGHT;
-	let scale = Math.min(scaleX, scaleY);
-	app.stage.scale.set(scale, scale);
-
-	app.stage.position.x = (window.innerWidth - WIDTH * scale) / 2;
-	app.stage.position.y = (window.innerHeight - HEIGHT * scale) / 2;
+	TWEEN.update(time);
 }
 
-resize();
+requestAnimationFrame(animate);
 
-document.body.appendChild(app.view);
+global.waiter = async time => new Promise(res => new TWEEN.Tween({}).to({}, time).start().onComplete(res));
 
-app.loader
-	.add('background', 'assets/background.jpg')
-	.add('assets/spritesheet.json');
+const init = _ => {
+	const app = new PIXI.Application({
+		width: 1920,
+		height: 1080,
+		resolution: 2,
+		resizeTo: window
+	});
 
-function setup() {
-	app.stage.mask = app.stage.addChild(new PIXI.Graphics()
-		.beginFill(0xffffff)
-		.drawRect(0, 0, WIDTH, HEIGHT)
-		.endFill());
+	async function setup(_, resources) {
+		for (let name in resources) {
+			if (!resources[name].texture || !resources[name].texture.baseTexture) continue;
 
-	app.stage.addChild(new Game);
-}
+			let config = resourcesConfig.find(config => config.name === name);
 
-app.loader.load(setup);
+			if (!config.atlas) continue;
 
-export { WIDTH, HEIGHT };
+			let spritesheet = new PIXI.Spritesheet(resources[name].texture.baseTexture, require(`../build/assets/${config.atlas}`));
+			spritesheet.parse(_ => {});
+		}
+
+		document.body.appendChild(app.view);
+		app.stage.addChild(new Game());
+		resize();
+	}
+
+	window.onresize = resize;
+
+	function resize() {
+		let w = window.getSize().width;
+		let h = window.getSize().height;
+
+		app.renderer.view.style.width = w + "px";
+		app.renderer.view.style.height = h + "px";
+	
+		app.renderer.resize(w, h);
+	
+		if (app.background) {
+			app.background.width = w;
+			app.background.height = h;
+		}
+
+		app.stage && app.stage.children && app.stage.children.forEach(child => child.resize && child.resize());
+	}
+
+	resourcesConfig.forEach(asset => app.loader.add(asset.name, require(`../build/assets/${asset.path}`).default));
+	app.loader.load(setup);
+};
+
+init();
+
+(function visibilityChange() {
+	let hidden = 'hidden'
+
+	if (hidden in document)
+		document.addEventListener('visibilitychange', onchange)
+	else if ((hidden = 'mozHidden') in document)
+		document.addEventListener('mozvisibilitychange', onchange)
+	else if ((hidden = 'webkitHidden') in document)
+		document.addEventListener('webkitvisibilitychange', onchange)
+	else if ((hidden = 'msHidden') in document)
+		document.addEventListener('msvisibilitychange', onchange)
+	else if ('onfocusin' in document)
+		document.onfocusin = document.onfocusout = onchange
+	else
+		window.onpageshow = window.onpagehide = window.onfocus = window.onblur = onchange
+
+	function onchange(evt) {
+		let v = false,
+			h = true,
+			evtMap = {
+				focus: v,
+				focusin: v,
+				pageshow: v,
+				blur: h,
+				focusout: h,
+				pagehide: h
+			};
+
+		evt = evt || window.event
+
+		let windowHidden = false;
+
+		if (evt.type in evtMap) {
+			windowHidden = evtMap[evt.type];
+		} else {
+			windowHidden = this[hidden];
+		}
+
+		try {
+			if (windowHidden) {
+				Howler.mute(true);
+			} else {
+				Howler.mute(false);
+			}
+		} catch(e) {
+
+		}
+	}
+
+	if (document[hidden] !== undefined) {
+		onchange({ type: document[hidden] ? 'blur' : 'focus' });
+	}
+
+	if (params.disableSounds) Howler.mute(true);
+})();
+
+export const WIDTH = 1280; 
+export const HEIGHT = 720;

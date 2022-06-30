@@ -10,7 +10,7 @@ class SpaceshipMotionComponent extends Component {
 	#transform;
 
 	onAwake() {
-		this.width = this.gameObject.getComponent(DisplayObjectComponent.name).displayObject.width;
+		this.width = this.gameObject.getComponent(DisplayObjectComponent).displayObject.width;
 		this.#transform = this.gameObject.transform;
 	}
 

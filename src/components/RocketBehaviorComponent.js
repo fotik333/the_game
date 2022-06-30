@@ -17,10 +17,10 @@ class RocketBehaviorComponent extends Component {
    }
 
 	onAwake() {
-		this.#spaceshipAttack = GameWorld.findOneByName('Spaceship').getComponent(SpaceshipAttackComponent.name);
+		this.#spaceshipAttack = GameWorld.findOneByName('Spaceship').getComponent(SpaceshipAttackComponent);
         this.#transform = this.gameObject.transform;
         this.#direction = -1;
-        this.#collider = this.gameObject.getComponent(CircleColliderComponent.name);
+        this.#collider = this.gameObject.getComponent(CircleColliderComponent);
 	}
 
     tick(dt) {

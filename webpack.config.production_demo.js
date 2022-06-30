@@ -1,12 +1,12 @@
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackInlineSourcePlugin = require('html-inline-script-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     devServer: {
         static: 'dist',
-        port: 3000,
-
+        port: 3000
     },
     target: ['web', 'es5'],
     module: {
@@ -35,17 +35,18 @@ module.exports = {
                 },
               },
             ],
-          },
+          }
         ]
     },
-    devtool: 'inline-source-map',
     plugins: [
         new webpack.ProvidePlugin({
           PIXI: 'pixi.js'
         }),
         new HTMLWebpackPlugin({
+            inlineSource: '.js',
             template: 'build/index.html',
             filename: 'index.html',
-        })
+        }),
+        new HtmlWebpackInlineSourcePlugin()
     ],
 };
