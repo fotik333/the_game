@@ -1,4 +1,4 @@
-import { WIDTH, HEIGHT } from './index.js';
+import { WIDTH, HEIGHT } from './config/layout';
 import { Container, Ticker } from 'pixi.js';
 import Pool from './utils/Pool';
 import { createSprite } from './utils/utils.js';
@@ -18,18 +18,18 @@ const TYPES = [
 		speed: 2,
 		size: 100
 	}
-]
+];
 
 class StarsBackground extends Container {
 	constructor() {
 		super();
 
-		this.starsPool = new Pool(this.createStar.bind(this), STARS_COUNT);
+		this.starsPool = new Pool(this._createStar.bind(this), STARS_COUNT);
 
-		Ticker.shared.add(this.tick, this);
+		Ticker.shared.add(this._tick, this);
 	}
 
-	tick() {
+	_tick() {
 		this.starsPool.elements.forEach(star => {
 			star.position.y += star.speed;
 
@@ -40,7 +40,7 @@ class StarsBackground extends Container {
 		});
 	}
 
-	createStar() {
+	_createStar() {
 		const type = Math.floor(Math.random() * TYPES.length);
 		const size = TYPES[type].size;
 		const star = this.addChild(createSprite({ texture: 'star', position: [Math.random() * WIDTH, Math.random() * HEIGHT],

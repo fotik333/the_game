@@ -3,19 +3,13 @@ import * as PIXI from 'pixi.js-legacy';
 import Game from './Game.js';
 import { resourcesConfig } from './resouces';
 
-const TWEEN = require('@tweenjs/tween.js');
-global.TWEEN = TWEEN;
 global.PIXI = PIXI;
 
 function animate(time) {
 	requestAnimationFrame(animate);
-
-	TWEEN.update(time);
 }
 
 requestAnimationFrame(animate);
-
-global.waiter = async time => new Promise(res => new TWEEN.Tween({}).to({}, time).start().onComplete(res));
 
 const init = _ => {
 	const app = new PIXI.Application({
@@ -111,6 +105,8 @@ init();
 			} else {
 				Howler.mute(false);
 			}
+
+			if (params.disableSounds) Howler.mute(true);
 		} catch(e) {
 
 		}
@@ -119,9 +115,4 @@ init();
 	if (document[hidden] !== undefined) {
 		onchange({ type: document[hidden] ? 'blur' : 'focus' });
 	}
-
-	if (params.disableSounds) Howler.mute(true);
 })();
-
-export const WIDTH = 1280; 
-export const HEIGHT = 720;

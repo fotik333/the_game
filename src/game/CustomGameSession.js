@@ -1,11 +1,11 @@
 import GameSession from "../core/GameSession";
-import { layoutConfig } from '../config/layout';
+import { layoutConfig, WIDTH, HEIGHT } from '../config/layout';
 import gameConfig from '../config/gameConfig.json';
 import GameObject from "../core/GameObject";
 import { SpaceshipMotionComponent, SpaceshipAttackComponent, DisplayObjectComponent, RocketBehaviorComponent, CircleColliderComponent, AsteroidBehaviorComponent, SetupComponent } from '../components';
-import { WIDTH, HEIGHT } from '../index.js';
-import { Sprite, Graphics } from "pixi.js";
+import { Graphics } from "pixi.js";
 import { LAYERS } from "../components/CircleColliderComponent";
+import { createSprite } from '../utils/utils.js';
 
 export default class CustomGameSession extends GameSession {
     #layout = layoutConfig.gameScreen;
@@ -18,24 +18,24 @@ export default class CustomGameSession extends GameSession {
         this.#config = config;
         this.inflate(this.#layout);
 
-        this.initGameObjects();
-        this.initUI();
-        this.initSetup();
+        this._initGameObjects();
+        this._initUI();
+        this._initSetup();
     }
 
-    initUI() {
+    _initUI() {
         this.timer = this.screen.getChildByName('Timer');
         this.timer.setup(gameConfig.gameTime);
 
         this.screen.getChildByName('RocketsAmount').text = gameConfig.rocketsCount;
     }
 
-    initGameObjects() {
-        this.createPlayer();
-        this.createAsteroids();
+    _initGameObjects() {
+        this._createPlayer();
+        this._createAsteroids();
     }
 
-    initSetup() {
+    _initSetup() {
         let setupComponent = new SetupComponent(this.screen, this.#layout);
         setupComponent.on('WIN', this.onWin.bind(this));
         setupComponent.on('LOSE', this.onLose.bind(this));
@@ -48,31 +48,29 @@ export default class CustomGameSession extends GameSession {
     }
 
     onWin() {
-        this.emit('SESSION_END', true);
+        this.emit(GameSession.SESSION_END, true);
     }
 
     onLose() {
-        this.emit('SESSION_END', false);
+        this.emit(GameSession.SESSION_END, false);
     }
 
-    createPlayer() {
-        let sprite = Sprite.from('spaceship');
-        sprite.anchor.set(.5, 1);
+    _createPlayer() {
+        let sprite = createSprite({ texture: 'spaceship', anchor: [.5, 1] });
 
         let components = [
             new DisplayObjectComponent(sprite, this.screen),
             new SpaceshipMotionComponent(),
-            new SpaceshipAttackComponent(this.createRocket.bind(this), 5, -sprite.height)
+            new SpaceshipAttackComponent(this._createRocket.bind(this), 5, -sprite.height)
         ];
 
         this.spaceship = new GameObject('Spaceship', components);
         this.spaceship.transform.position = { x: WIDTH / 2, y: HEIGHT - 10 };
     }
 
-    createAsteroids() {
+    _createAsteroids() {
         for (let i = 0; i < gameConfig.asteroidsCount; i++) {
-            let sprite = Sprite.from('asteroid');
-            sprite.anchor.set(.5, .5);
+            let sprite = createSprite({ texture: 'asteroid', anchor: [.5]});
 
             if (gameConfig.asteroidsRandomizeScale) {
                 sprite.width = sprite.height = sprite.height * (gameConfig.asteroidsScaleRange[0] + Math.random() * (gameConfig.asteroidsScaleRange[1] - gameConfig.asteroidsScaleRange[0]));
@@ -103,11 +101,11 @@ export default class CustomGameSession extends GameSession {
         }
     }
 
-    createRocket() {
-        let rocketGraphics = new Graphics();
-        rocketGraphics.beginFill(0x00ff00);
-        rocketGraphics.drawCircle(0, 0, 15);
-        rocketGraphics.endFill();
+    _createRocket() {
+        let rocketGraphics = new Graphics()
+            .beginFill(0x00ff00)
+            .drawCircle(0, 0, 15)
+            .endFill();
 
         let components = [
             new DisplayObjectComponent(rocketGraphics, this.screen),

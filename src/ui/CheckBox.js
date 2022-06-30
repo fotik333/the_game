@@ -1,5 +1,5 @@
-import { Sprite } from '@pixi/sprite';
 import { Button } from '.';
+import { createSprite } from '../utils/utils';
 
 export default class CheckBox extends Button {
     constructor(textures, checkTexture, checkOffsetY) {
@@ -7,8 +7,7 @@ export default class CheckBox extends Button {
 
         this.checked = false;
 
-        this.check = this.addChild(Sprite.from(checkTexture));
-        this.check.anchor.set(.5);
+        this.check = this.addChild(createSprite({ texture: checkTexture, anchor: [.5]}));
         this.check.visible = false;
 
         this.on('pressed', this.onPressed, this);

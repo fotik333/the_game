@@ -1,6 +1,6 @@
 import Component from "../core/Component";
 import InputManager from "../ui/InputManager";
-import { WIDTH } from '../index';
+import { WIDTH } from '../config/layout';
 import { DisplayObjectComponent } from ".";
 import gameConfig from '../config/gameConfig.json';
 

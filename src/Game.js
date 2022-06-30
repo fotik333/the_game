@@ -2,36 +2,37 @@ import { InputManager } from "./ui";
 import { Sprite, Container, Graphics } from 'pixi.js';
 import StarsBackground from "./StarsBackground";
 import Screen from './core/Screen';
-import { layoutConfig } from './config/layout';
+import { layoutConfig, HEIGHT, WIDTH, MENU_SCENE, RESULT_SCENE, GAME_SCENE } from './config/layout';
 import gameConfig from './config/gameConfig.json';
 import CustomGameSession from './game/CustomGameSession';
-import { HEIGHT, WIDTH } from ".";
+import GameSession from "./core/GameSession";
+import { createSprite } from './utils/utils.js';
 
 class Game extends Container {
 	constructor() {
 		super();
 
-		let backround = this.addChild(Sprite.from('background'));
-		backround.width = WIDTH;
-		backround.height = HEIGHT;
-
+		this.addChild(createSprite({ texture: 'background', width: WIDTH, height: HEIGHT}));
+        this.addChild(new StarsBackground());
 		this.mask = this.addChild(new Graphics().beginFill(0xff0000, 0.5).drawRect(0, 0, WIDTH, HEIGHT).endFill());
 
-        this.starsBackground = this.addChild(new StarsBackground());
+		this._initScenes();
 
-		this.menuScreen = this.addChild(new Screen(layoutConfig.menuScreen));
-        this.menuScreen.on(layoutConfig.menuScreen.events.onPlayButtonPressed, this.onPlayButtonPressed.bind(this));
-
-		this.resultScreen = this.addChild(new Screen(layoutConfig.resultScreen));
-        this.resultScreen.on(layoutConfig.resultScreen.events.onMenuButtonPressed, this.onMenuButtonPressed.bind(this));
-        this.resultScreen.on(layoutConfig.resultScreen.events.onRestartButtonPressed, this.onRestartButtonPressed.bind(this));
-
-		this.gameScreen = this.addChild(new Screen());
-
-		this.switchScreen('MENU');
+		this._switchScreen(MENU_SCENE);
 	}
 
-	switchScreen(screenName) {
+	_initScenes() {
+		this._menuScreen = this.addChild(new Screen(layoutConfig.menuScreen));
+        this._menuScreen.on(layoutConfig.menuScreen.events.onPlayButtonPressed, this._onPlayButtonPressed.bind(this));
+
+		this._resultScreen = this.addChild(new Screen(layoutConfig.resultScreen));
+        this._resultScreen.on(layoutConfig.resultScreen.events.onMenuButtonPressed, this._onMenuButtonPressed.bind(this));
+        this._resultScreen.on(layoutConfig.resultScreen.events.onRestartButtonPressed, this._onRestartButtonPressed.bind(this));
+
+		this._gameScreen = this.addChild(new Screen());
+	}
+
+	_switchScreen(screenName) {
 		this.children.forEach(child => {
 			if (!child.isScreen) return;
 
@@ -39,44 +40,44 @@ class Game extends Container {
 		});
 	}
 
-	selectGameSession() {
-		return new CustomGameSession(this.gameScreen, gameConfig);
+	_selectGameSession() {
+		return new CustomGameSession(this._gameScreen, gameConfig);
 	}
 
-	startGameSession() {
-		this.gameSession = this.selectGameSession();
+	_startGameSession() {
+		this._gameSession = this._selectGameSession();
 
-		this.switchScreen('GAME');
+		this._switchScreen(GAME_SCENE);
 
 		InputManager.enable();
 
-		this.gameSession.on('SESSION_END', this.finishGameSession.bind(this));
-		this.gameSession.start();
+		this._gameSession.on(GameSession.SESSION_END, this._finishGameSession.bind(this));
+		this._gameSession.start();
 	}
 
-	finishGameSession(isWin) {
-		this.gameSession.finish();
+	_finishGameSession(isWin) {
+		this._gameSession.finish();
 		InputManager.disable();
 		
-		this.gameSession.off('SESSION_END', this.finishGameSession.bind(this));
-		this.resultScreen.getChildByName('ResultText').text = `YOU ${isWin ? 'WIN' : 'LOSE'}`;
-		this.switchScreen('RESULT');
+		this._gameSession.off(GameSession.SESSION_END, this._finishGameSession.bind(this));
+		this._resultScreen.getChildByName('ResultText').text = `YOU ${isWin ? 'WIN' : 'LOSE'}`;
+		this._switchScreen(RESULT_SCENE);
 	}
 
-	onMenuButtonPressed() {
-		this.switchScreen('MENU');
+	_onMenuButtonPressed() {
+		this._switchScreen(MENU_SCENE);
 	}
 
-    onRestartButtonPressed() {
-		this.startGameSession();
+    _onRestartButtonPressed() {
+		this._startGameSession();
     }
 
-    onPlayButtonPressed() {
-		this.startGameSession();
+    _onPlayButtonPressed() {
+		this._startGameSession();
     }
 
 	destroy() {
-		this.gameSession.finish();
+		this._gameSession.finish();
 	}
 
 	resize() {

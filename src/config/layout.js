@@ -1,12 +1,17 @@
 import { TextButton, Timer } from '../ui';
 import { Text, TextStyle } from 'pixi.js';
+import Game from '../Game';
 
 const WIDTH = 1280;
 const HEIGHT = 720;
 
+const MENU_SCENE = "MENU";
+const RESULT_SCENE = "RESULT";
+const GAME_SCENE = "GAME";
+
 const layoutConfig = {
     menuScreen: {
-        screenName: 'MENU',
+        screenName: MENU_SCENE,
         children: [
             {
                 name: 'PlayButton',
@@ -24,7 +29,7 @@ const layoutConfig = {
         },
     },
     gameScreen: {
-        screenName: 'GAME',
+        screenName: GAME_SCENE,
         children: [
             {
                 name: 'Timer',
@@ -48,7 +53,7 @@ const layoutConfig = {
         }
     },
     resultScreen: {
-        screenName: 'RESULT',
+        screenName: RESULT_SCENE,
         children: [
             {
                 name: 'RestartButton',
@@ -84,4 +89,4 @@ const layoutConfig = {
     },
 };
 
-export { layoutConfig };
+export { layoutConfig, WIDTH, HEIGHT, MENU_SCENE, RESULT_SCENE, GAME_SCENE };

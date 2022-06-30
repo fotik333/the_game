@@ -1,5 +1,5 @@
 import Component from "../core/Component";
-import { WIDTH, HEIGHT } from '../index';
+import { WIDTH, HEIGHT } from '../config/layout';
 import { CircleColliderComponent } from ".";
 import gameConfig from '../config/gameConfig.json';
 
